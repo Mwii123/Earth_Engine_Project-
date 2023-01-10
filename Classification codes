@@ -1,0 +1,51 @@
+//SUPERVISED CLASSIFICATION
+var L8 = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA")
+.filterBounds(ROI)
+.filterDate("2019-03-09", "2020-09-09")
+.filterMetadata('CLOUD_COVER', 'less_than', 1)
+.mean()
+.clip(ROI)
+
+//for false color composite//
+
+var image = L8.select('B5', 'B4', 'B3')
+Export.image.toDrive({
+image: image, 
+folder: "Supervised",
+scale: 30,
+maxPixels: 1e13,
+
+//for adding layer//
+
+Map.addLayer(L8, {bands:["B5", "B4", "B3"]});
+
+//for adding training points//
+
+var training_points = water.merge(forest).merge(nonforest);
+var training_data = L8.sampleRegions({collection:training_points,properties:['LC'],scale: 30})
+var classifier = ee.Classifier.smileCart()
+var classifier = classifier.train({features:training_data,classProperty: 'LC', inputProperties: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B10", "B11"]});
+var classified_image = L8.classify(classifier);
+Map.addLayer(classified_image,{min:0, max:2, palette:[ 'black', 'green', 'yellow']},'classified image');
+
+//UNSUPERVISED CLASSIFICATION
+var L8 = ee.Imagecollection("LANDSAT/LC08/C01/T1_TOA")
+.filterBounds(ROI)
+.filterDate("2019-03-09", "2020-09-09")
+.filterMetadata('CLOUD_COVER', 'less_than', 1)
+.mean()
+.clip(ROI)
+.Map.addLayer(L8, {bands:["B4","B3","B2"]});
+var training = (L8. sample({
+  region: ROI,
+  scale: 30,
+  numPixels: 5000
+});
+var clusterer = ee.Clusterer.wekaKMeans(20).train(training);
+var unsupervised = L8.cluster(clusterer);
+Map.addlayer(unsupervised.randomVisualizer(), {}, 'clusters');
+Export.image.toDrive({
+image: image, 
+folder: "Supervised",
+scale: 30,
+maxPixels: 1e13,
