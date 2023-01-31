@@ -1,0 +1,19 @@
+//Load LANDSAT 8
+var image = ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+.filterDate ('2018-01-01','2018-12-31')
+.filterBounds(ROI)
+.sort('CLOUD_COVER')
+.first();
+
+var visPaaramsTrue = {bands:['SR_B4','SR_B3','SR_B2'], min: 0, max: 3000, gamma: 1.4};
+Map.addLayer(image.clip(ROI), visPaaramsTrue,'Landsat 8');
+Map.centerObject(ROI);
+
+//Export image
+Export.image.toDrive({
+  image: image,
+  description: 'Landsat 8 name of the area',
+  scale: 30,
+  region: ROI,
+  maxPixels: 1e13
+  });
