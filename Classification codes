@@ -1,5 +1,5 @@
 //SUPERVISED CLASSIFICATION
-var image = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA")
+var dataset = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA")
 .filterBounds(ROI)
 .filterDate("2019-03-09", "2020-09-09")
 .filterMetadata('CLOUD_COVER', 'less_than', 1)
@@ -29,7 +29,7 @@ var classified_image = L8.classify(classifier);
 Map.addLayer(classified_image,{min:0, max:2, palette:[ 'black', 'green', 'yellow']},'classified image');
 
 //UNSUPERVISED CLASSIFICATION
-var L8 = ee.Imagecollection("LANDSAT/LC08/C01/T1_TOA")
+var dataset = ee.Imagecollection("LANDSAT/LC08/C01/T1_TOA")
 .filterBounds(ROI)
 .filterDate("2019-03-09", "2020-09-09")
 .filterMetadata('CLOUD_COVER', 'less_than', 1)
