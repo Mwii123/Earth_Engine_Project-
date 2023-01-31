@@ -1,5 +1,5 @@
 //SUPERVISED CLASSIFICATION
-var L8 = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA")
+var image = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA")
 .filterBounds(ROI)
 .filterDate("2019-03-09", "2020-09-09")
 .filterMetadata('CLOUD_COVER', 'less_than', 1)
